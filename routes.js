@@ -46,11 +46,16 @@ router.post('/api/shorturl', async (req, res) => {
   try {
       const parsedUrl = new URL(url);
       dns.lookup(parsedUrl.hostname, async (err, address, family) => {
-          console.log(err, address)
+          console.log({
+            "URL": `${url}`,
+            "Error": err, 
+            "IP": address
+          })
           if (err) {
               console.error({'HTTP/400': `Invalid URL: ${err}`});
               return res.status(400).json({ error: 'invalid url' });
           } else {
+
               console.log({'HTTP/200': `Valid Url Request ${url}`});
 
               // Check if document with the given original_url exists
@@ -72,7 +77,10 @@ router.post('/api/shorturl', async (req, res) => {
                           "short_url": shortUrlValue,
                       });
                       await shortUrl.save();
-                      return res.status(200).json({url, shortUrlValue});
+                      return res.status(200).json({
+                        "original_url": url, 
+                        "short_url": shortUrlValue
+                      });
                   } catch (error) {
                       console.error(error);
                       return res.status(500).send(error);
