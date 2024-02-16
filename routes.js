@@ -96,14 +96,21 @@ router.post('/api/shorturl', async (req, res) => {
 
 // -------------------------------------------------------------------------------------------------------------------------------------
 // Get all users
-router.get('/users', async (req, res) => {
+router.get('/api/shorturl/:code', async (req, res) => {
+  let id = req.params['code'] 
   try {
-    const users = await shortUrlModel.find({});
-    res.send(users);
+    const exist_url = await shortUrlModel.findOne({"short_url": id});
+    if (exist_url === null || exist_url.length === 0) {
+      res.json({'HTTP/400': "No ShortCodes Exist."});
+    }
+    else {
+      console.log({"HTTP/301": `Redirecting to ${exist_url.original_url}`})
+      res.redirect(exist_url.original_url)
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
-  }
+  };
 });
 
 // Update a user
