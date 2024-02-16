@@ -42,7 +42,11 @@ router.get('/api/all', async (req, res) => {
 
 // -------------------------------------------------------------------------------------------------------------------------------------
 router.post('/api/shorturl', async (req, res) => {
+  //Post url from user input
   const url = req.body.url;
+  if (input === null || input === '') { 
+    return res.json({ error: 'invalid url' }); 
+  }
   try {
       const parsedUrl = new URL(url);
       dns.lookup(parsedUrl.hostname, async (err, address, family) => {
