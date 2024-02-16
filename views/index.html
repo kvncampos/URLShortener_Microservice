@@ -2,7 +2,9 @@
 
 <html>
   <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" />
     <title>URL Shortener Microservice | freeCodeCamp.org</title>
+
     <link
       rel="icon"
       type="image/png"
@@ -11,22 +13,57 @@
     <link href="/public/style.css" rel="stylesheet" type="text/css" />
   </head>
 
-  <body>
-    <h1>URL Shortener Microservice</h1>
-    <main>
-      <section>
-        <form action="api/shorturl" method="POST">
-          <fieldset>
-            <legend>URL Shortener</legend>
-            <label for="url_input">URL:</label>
-            <input id="url_input" type="text" name="url" placeholder="https://www.freecodecamp.org/" />
-            <input type="submit" value="POST URL" />
-          </fieldset>
-        </form>
-      </section>
-    </main>
-    <footer>
-      <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
-    </footer>
-  </body>
+<header>
+
+<div
+  class="bg-image"
+  style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/Others/images/76.webp'); height: 100vh;">
+
+  <div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+      <div class="container">
+
+        <div class="masthead clearfix">
+          <div class="container inner">
+            <h3 class="masthead-brand">URL Shortener Microservice</h3>
+            <nav>
+              <ul class="nav masthead-nav">
+                <li class="active"><a href='api/all' action="api/all" method="GET">GET: DATA</a></li>
+                <li><a href="#">PLACEHOLDER 1</a></li>
+                <li><a href="#">PLACEHOLDER 2</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div class="inner cover">
+          <!-- <h1 class="cover-heading">URL Shortener Microservice</h1> -->
+          <div class=".container">
+            <form action="api/shorturl" method="POST">
+              <fieldset>
+                <legend>URL Shortener</legend>
+                <label for="url_input">URL:</label>
+                <input id="url_input" type="url" name="url" placeholder="https://www.freecodecamp.org/" pattern="https://www.*"/>
+                <input class="btn btn-primary" type="submit" value="POST URL" />
+              </fieldset>
+            </form>
+            <p class="info">Enter a Valid URL to Store and Receive a Shortcut Endpoint.</p>
+            <p class="info">Example: https://www.google.com</p>
+          </div>
+          <p>By <a class="btn btn-outline-light" href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</header>
 </html>
+
+
+
