@@ -48,11 +48,10 @@ router.post('/api/shorturl', async (req, res) => {
       dns.lookup(parsedUrl.hostname, async (err, address, family) => {
           if (err) {
               console.error({'HTTP/400': `Invalid URL: ${err.code}`});
-              return res.status(400).json({ error: 'invalid url' })
-              // return res.status(400).json({ 
-                // 'HTTP/400': 'Invalid URL',
-                // 'Info': 'Verify the URL is Valid and Try Again.'
-              // });
+              return res.status(400).json({ 
+                'HTTP/400': 'Invalid URL',
+                'Info': 'Verify the URL is Valid and Try Again.'
+              });
           } else {
               console.log({'HTTP/200': `Valid Url Request ${url}`});
 
@@ -91,8 +90,8 @@ router.post('/api/shorturl', async (req, res) => {
           }
       });
   } catch (error) {
-    console.error({'HTTP/400': `Invalid URL: ${err.code}`});
-    return res.status(400).json({ 'HTTP/400': 'Invalid URL' });
+    console.error({'HTTP/400': `Invalid URL`});
+    return res.status(400).json({ error: 'invalid url' })
   }
 });
 
