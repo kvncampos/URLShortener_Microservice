@@ -5,10 +5,6 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const Counter = require('./DB/Schemas/counterModel')
 const dns = require('dns');
-const urlparser = require("url");
-const cors = require('cors');
-
-router.use(cors({ optionsSuccessStatus: 200 }));  // some legacy browsers choke on 204
 router.use('/public', express.static(`${process.cwd()}/public`));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -46,20 +42,20 @@ router.get('/api/all', async (req, res) => {
 
 // -------------------------------------------------------------------------------------------------------------------------------------
 router.post('/api/shorturl', async (req, res) => {
-  // Post url from user input
+  //Post url from user input
   const url = req.body.url;
   try {
-      // const parsedUrl = new URL(url);
-      let something = dns.lookup(url.hostname, async (err, address, family) => {
-      console.log({
+      const parsedUrl = new URL(url);
+      let something = dns.lookup(parsedUrl.hostname, async (err, address, family) => {
+          console.log({
             "URL": `${url}`,
             "IP": address
-      })
+          })
           if (!address) {
-              console.error({'HTTP/400': `Invalid URL: ${err}`});
-              return res.status(400).json({ error: 'Invalid URL' });
+              console.error({'HTTP/400': `Invalid URL: ${parsedUrl}`});
+              return res.status(400).json({ error: 'invalid url' });
           } else {
-              const parsedUrl = new URL(url);
+
               console.log({'HTTP/200': `Valid Url Request ${url}`});
 
               // Check if document with the given original_url exists
@@ -101,13 +97,13 @@ router.post('/api/shorturl', async (req, res) => {
       });
   } catch (error) {
     console.error({'HTTP/400': `Invalid URL ${url}`});
-    return res.status(400).json({ error: 'Invalid URL' })
+    return res.status(400).json({ error: 'invalid url' })
   }
 });
-// 
-// 
+
+
 // -------------------------------------------------------------------------------------------------------------------------------------
-// Go to Redirect URL
+// Get all users
 router.get('/api/shorturl/:code', async (req, res) => {
   let id = req.params['code'] 
   try {
@@ -124,66 +120,33 @@ router.get('/api/shorturl/:code', async (req, res) => {
     res.status(500).send(error);
   };
 });
-// 
-
-
-// router.post('/api/shorturl/', (req, res) => {
-  // const bodyurl = req.body.url;
-
-  // const something = dns.lookup(urlparser.parse(bodyurl).hostname, (err, address) => {
-      // if (!address) {
-          // res.json({ error: "Invalid URL" })
-      // } else {
-          // const url = new shortUrlModel({ url: bodyurl })
-          // url.save((err, data) => {
-              // res.json({
-                  // original_url: data.url,
-                  // short_url: data.id
-              // })
-          // })
-      // }
-  // })
-// });
-
-// router.get("/api/shorturl/:id", (req, res) => {
-  // const id = req.params.id;
-  // shortUrlModel.findById(id, (err, data) => {
-      // if (!data) {
-          // res.json({ error: "Invalid URL" })
-      // } else {
-          // res.redirect(data.url)
-      // }
-  // });
-// });
-
-
 
 // Update a user
-// router.put('/users/:shortcode', async (req, res) => {
-  // const { shortcode } = req.params;
-  // const { short_url } = req.body;
-// 
-  // try {
-    // const user = await shortUrlModel.findByIdAndUpdate(shortcode, { short_url }, { new: true });
-    // res.send(user);
-  // } catch (error) {
-    // console.error(error);
-    // res.status(500).send(error);
-  // }
-// });
-// 
-// Delete a user
-// router.delete('/users/:url', async (req, res) => {
-  // const { url } = req.params;
+router.put('/users/:shortcode', async (req, res) => {
+  const { shortcode } = req.params;
+  const { short_url } = req.body;
 
-  // try {
-    // const user = await shortUrlModel.findByIdAndDelete(url);
-    // res.send(user);
-  // } catch (error) {
-    // console.error(error);
-    // res.status(500).send(error);
-  // }
-// });
+  try {
+    const user = await shortUrlModel.findByIdAndUpdate(shortcode, { short_url }, { new: true });
+    res.send(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
+
+// Delete a user
+router.delete('/users/:url', async (req, res) => {
+  const { url } = req.params;
+
+  try {
+    const user = await shortUrlModel.findByIdAndDelete(url);
+    res.send(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+});
 
 router.use((req, res, next) => {
   const err = new Error('Not Found');
