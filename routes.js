@@ -5,9 +5,12 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const Counter = require('./DB/Schemas/counterModel')
 const dns = require('dns');
+const cors = require('cors');
+
+router.use(cors({ optionsSuccessStatus: 200 }));  // some legacy browsers choke on 204
 router.use('/public', express.static(`${process.cwd()}/public`));
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.urlencoded({ extended: true }));
 
 
 // Welcome Page
