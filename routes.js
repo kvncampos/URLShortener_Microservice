@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const Counter = require('./DB/Schemas/counterModel')
 const dns = require('dns');
+const urlparser = require("url");
 router.use('/public', express.static(`${process.cwd()}/public`));
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -41,113 +42,146 @@ router.get('/api/all', async (req, res) => {
 });
 
 // -------------------------------------------------------------------------------------------------------------------------------------
-router.post('/api/shorturl', async (req, res) => {
+// router.post('/api/shorturl', async (req, res) => {
   //Post url from user input
-  const url = req.body.url;
-  try {
+  // const url = req.body.url;
+  // try {
       // const parsedUrl = new URL(url);
-      let something = dns.lookup(urlparser.parse(url), async (err, address, family) => {
-          console.log({
-            "URL": `${url}`,
-            "Error": err, 
-            "IP": address
-          })
-          if (!address) {
-              console.error({'HTTP/400': `Invalid URL: ${err}`});
-              return res.status(400).json({ error: 'Invalid URL' });
-          } else {
+      // let something = dns.lookup(urlparser.parse(url), async (err, address, family) => {
+          // console.log({
+            // "URL": `${url}`,
+            // "Error": err, 
+            // "IP": address
+          // })
+          // if (!address) {
+              // console.error({'HTTP/400': `Invalid URL: ${err}`});
+              // return res.status(400).json({ error: 'Invalid URL' });
+          // } else {
 
-              console.log({'HTTP/200': `Valid Url Request ${url}`});
+              // console.log({'HTTP/200': `Valid Url Request ${url}`});
 
               // Check if document with the given original_url exists
-              const exist_url = await shortUrlModel.findOne({"original_url": url});
-              if (exist_url === null || exist_url.length === 0) {
+              // const exist_url = await shortUrlModel.findOne({"original_url": url});
+              // if (exist_url === null || exist_url.length === 0) {
 
                   // No documents with the given original_url found, continue
-                  console.log({
-                      'HTTP/201': `Valid Url Request ${url}`,
-                      'Info': 'No Documents with That URL in Database, Created New Document Entry!'
-                  });
+                  // console.log({
+                      // 'HTTP/201': `Valid Url Request ${url}`,
+                      // 'Info': 'No Documents with That URL in Database, Created New Document Entry!'
+                  // });
 
                   // Create short URL and save it to database
-                  try {
-                      const counter = await Counter.findOneAndUpdate({}, { $inc: { count: 1 } }, { new: true, upsert: true });
-                      const shortUrlValue = counter.count || 1;
-                      const shortUrl = new shortUrlModel({
-                          "original_url": url,
-                          "short_url": shortUrlValue,
-                      });
-                      await shortUrl.save();
-                      return res.status(200).json({
-                        "original_url": url, 
-                        "short_url": shortUrlValue
-                      });
-                  } catch (error) {
-                      console.error(error);
-                      return res.status(500).send(error);
-                  }
-              } else {
+                  // try {
+                      // const counter = await Counter.findOneAndUpdate({}, { $inc: { count: 1 } }, { new: true, upsert: true });
+                      // const shortUrlValue = counter.count || 1;
+                      // const shortUrl = new shortUrlModel({
+                          // "original_url": url,
+                          // "short_url": shortUrlValue,
+                      // });
+                      // await shortUrl.save();
+                      // return res.status(200).json({
+                        // "original_url": url, 
+                        // "short_url": shortUrlValue
+                      // });
+                  // } catch (error) {
+                      // console.error(error);
+                      // return res.status(500).send(error);
+                  // }
+              // } else {
                   // Documents with the given original_url found
-                  console.log('Documents found with original_url:', url);
-                  return res.status(200).json({
-                      "HTTP/200": 'Email already in Database.',
-                      "Message": 'Please Try Another URL or Delete Record',
-                  }).end();
-              }
-          }
-      });
-  } catch (error) {
-    console.error({'HTTP/400': `Invalid URL ${url}`});
-    return res.status(400).json({ error: 'Invalid URL' })
-  }
-});
+                  // console.log('Documents found with original_url:', url);
+                  // return res.status(200).json({
+                      // "HTTP/200": 'Email already in Database.',
+                      // "Message": 'Please Try Another URL or Delete Record',
+                  // }).end();
+              // }
+          // }
+      // });
+  // } catch (error) {
+    // console.error({'HTTP/400': `Invalid URL ${url}`});
+    // return res.status(400).json({ error: 'Invalid URL' })
+  // }
+// });
 
 
 // -------------------------------------------------------------------------------------------------------------------------------------
 // Get all users
-router.get('/api/shorturl/:code', async (req, res) => {
-  let id = req.params['code'] 
-  try {
-    const exist_url = await shortUrlModel.findOne({"short_url": id});
-    if (exist_url === null || exist_url.length === 0) {
-      res.json({'HTTP/400': "No ShortCodes Exist."});
-    }
-    else {
-      console.log({"HTTP/301": `Redirecting to ${exist_url.original_url}`})
-      res.redirect(exist_url.original_url)
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  };
+// router.get('/api/shorturl/:code', async (req, res) => {
+  // let id = req.params['code'] 
+  // try {
+    // const exist_url = await shortUrlModel.findOne({"short_url": id});
+    // if (exist_url === null || exist_url.length === 0) {
+      // res.json({'HTTP/400': "No ShortCodes Exist."});
+    // }
+    // else {
+      // console.log({"HTTP/301": `Redirecting to ${exist_url.original_url}`})
+      // res.redirect(exist_url.original_url)
+    // }
+  // } catch (error) {
+    // console.error(error);
+    // res.status(500).send(error);
+  // };
+// });
+
+
+
+router.post('/api/shorturl/', (req, res) => {
+  const bodyurl = req.body.url;
+
+  const something = dns.lookup(urlparser.parse(bodyurl).hostname, (err, address) => {
+      if (!address) {
+          res.json({ error: "Invalid URL" })
+      } else {
+          const url = new shortUrlModel({ url: bodyurl })
+          url.save((err, data) => {
+              res.json({
+                  original_url: data.url,
+                  short_url: data.id
+              })
+          })
+      }
+  })
 });
+
+router.get("/api/shorturl/:id", (req, res) => {
+  const id = req.params.id;
+  shortUrlModel.findById(id, (err, data) => {
+      if (!data) {
+          res.json({ error: "Invalid URL" })
+      } else {
+          res.redirect(data.url)
+      }
+  });
+});
+
+
 
 // Update a user
-router.put('/users/:shortcode', async (req, res) => {
-  const { shortcode } = req.params;
-  const { short_url } = req.body;
-
-  try {
-    const user = await shortUrlModel.findByIdAndUpdate(shortcode, { short_url }, { new: true });
-    res.send(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
-
+// router.put('/users/:shortcode', async (req, res) => {
+  // const { shortcode } = req.params;
+  // const { short_url } = req.body;
+// 
+  // try {
+    // const user = await shortUrlModel.findByIdAndUpdate(shortcode, { short_url }, { new: true });
+    // res.send(user);
+  // } catch (error) {
+    // console.error(error);
+    // res.status(500).send(error);
+  // }
+// });
+// 
 // Delete a user
-router.delete('/users/:url', async (req, res) => {
-  const { url } = req.params;
+// router.delete('/users/:url', async (req, res) => {
+  // const { url } = req.params;
 
-  try {
-    const user = await shortUrlModel.findByIdAndDelete(url);
-    res.send(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
+  // try {
+    // const user = await shortUrlModel.findByIdAndDelete(url);
+    // res.send(user);
+  // } catch (error) {
+    // console.error(error);
+    // res.status(500).send(error);
+  // }
+// });
 
 router.use((req, res, next) => {
   const err = new Error('Not Found');
