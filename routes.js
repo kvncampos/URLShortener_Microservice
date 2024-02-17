@@ -44,20 +44,17 @@ router.get('/api/all', async (req, res) => {
 router.post('/api/shorturl', async (req, res) => {
   //Post url from user input
   const url = req.body.url;
-  if (input === null || input === '') { 
-    return res.json({ error: 'invalid url' }); 
-  }
   try {
-      const parsedUrl = new URL(url);
-      dns.lookup(parsedUrl.hostname, async (err, address, family) => {
+      // const parsedUrl = new URL(url);
+      let something = dns.lookup(urlparser.parse(url), async (err, address, family) => {
           console.log({
             "URL": `${url}`,
             "Error": err, 
             "IP": address
           })
-          if (err) {
+          if (!address) {
               console.error({'HTTP/400': `Invalid URL: ${err}`});
-              return res.status(400).json({ error: 'invalid url' });
+              return res.status(400).json({ error: 'Invalid URL' });
           } else {
 
               console.log({'HTTP/200': `Valid Url Request ${url}`});
