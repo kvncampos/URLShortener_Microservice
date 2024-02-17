@@ -56,7 +56,7 @@ router.post('/api/shorturl', async (req, res) => {
           })
           if (!address) {
               console.error({'HTTP/400': `Invalid URL: ${parsedUrl}`});
-              return res.status(400).json({ error: 'invalid url' });
+              return res.status(400).json({ error: 'Invalid URL' });
           } else {
 
               console.log({'HTTP/200': `Valid Url Request ${url}`});
@@ -100,7 +100,7 @@ router.post('/api/shorturl', async (req, res) => {
       });
   } catch (error) {
     console.error({'HTTP/400': `Invalid URL ${url}`});
-    return res.status(400).json({ error: 'invalid url' })
+    return res.status(400).json({ error: 'Invalid URL' })
   }
 });
 
