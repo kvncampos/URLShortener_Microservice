@@ -15,7 +15,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 // Welcome Page
 router.get('/', function(req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+  res.sendFile(process.cwd() + '/views/urlShortener_View.html');
 });
 
 // Your first API endpoint
@@ -23,11 +23,10 @@ router.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-
 // -------------------------------------------------------------------------------------------------------------------------------------
 
 // Get All DB Data
-router.get('/api/all', async (req, res) => {
+router.get('/api/shorturl/all', async (req, res) => {
   try {
     const data = await shortUrlModel.find().select({ original_url: 1, short_url: 1 , _id: 0});
     if (data && data.length > 0) {
@@ -128,7 +127,7 @@ router.get('/api/shorturl/:code', async (req, res) => {
 });
 
 // Update a user
-router.put('/users/:shortcode', async (req, res) => {
+router.put('/api/shorturl/:shortcode', async (req, res) => {
   const { shortcode } = req.params;
   const { short_url } = req.body;
 
@@ -142,7 +141,7 @@ router.put('/users/:shortcode', async (req, res) => {
 });
 
 // Delete a user
-router.delete('/users/:url', async (req, res) => {
+router.delete('/api/shorturl/:shortcode', async (req, res) => {
   const { url } = req.params;
 
   try {
